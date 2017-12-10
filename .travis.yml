@@ -11,4 +11,7 @@ matrix:
   allow_failures:
     - php: hhvm
 
+install:
+  - composer install
+
 script: phpunit --configuration phpunit.xml --coverage-text
