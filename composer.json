@@ -1,0 +1,30 @@
+{
+    "name": "drpdigital/json-api-parser",
+    "description": "Parser and validator for http://jsonapi.org.",
+    "type": "library",
+    "require": {
+        "php": ">=5.5",
+        "psr/container": "1.0.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^6.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Drp\\JsonApiParser\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Chris Normansell",
+            "email": "chris.normansell@drpgroup.com"
+        }
+    ],
+    "minimum-stability": "stable"
+}

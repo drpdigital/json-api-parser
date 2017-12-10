@@ -1,0 +1,4 @@
+.idea/
+vendor/
+tests/codeCoverage
+tests/coverage.xml
