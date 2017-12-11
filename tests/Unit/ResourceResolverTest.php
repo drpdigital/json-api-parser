@@ -17,14 +17,7 @@ class ResourceResolverTest extends TestCase
     {
         $resolver = new ResourceResolver(new FakeContainer());
 
-        $resolve = new class {
-            public static $called = false;
-
-            public static function handle()
-            {
-                self::$called = true;
-            }
-        };
+        $resolve = new FakeChildDependency();
 
         $resolver->bind('fake', get_class($resolve) . '::handle');
 
@@ -89,7 +82,7 @@ class ResourceResolverTest extends TestCase
     {
         $resolver = new ResourceResolver(new FakeContainer());
 
-        $parent = new class extends FakeDependency {};
+        $parent = new FakeChildDependency();
 
         $resolver->bind('test', function (FakeDependency $dependency) {
             $this->assertTrue($dependency->isBuilt());
@@ -132,5 +125,15 @@ class ResourceResolverTest extends TestCase
         $resolver->resolve('test', []);
 
         $this->assertTrue($called);
+    }
+}
+
+class FakeChildDependency extends FakeDependency
+{
+    static $called = false;
+
+    public static function handle()
+    {
+        self::$called = true;
     }
 }

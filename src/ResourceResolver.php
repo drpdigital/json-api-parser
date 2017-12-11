@@ -258,6 +258,10 @@ class ResourceResolver
      */
     protected function callResolver($resolver, $parameters)
     {
+        if (is_string($resolver)) {
+            return call_user_func_array($resolver, $parameters);
+        }
+
         if (count($parameters) === 0) {
             return $resolver();
         }
