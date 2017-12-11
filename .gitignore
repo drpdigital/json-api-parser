@@ -2,3 +2,4 @@
 vendor/
 tests/codeCoverage
 tests/coverage.xml
+composer.lock
