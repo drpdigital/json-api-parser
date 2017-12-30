@@ -40,7 +40,7 @@ class CanParseAndCreateObjectsTest extends TestCase
         ];
         $called = false;
         $this->parser
-            ->addResolver('test', function ($data, $id) use (&$called) {
+            ->resolver('test', function ($data, $id) use (&$called) {
                 $this->assertEquals(31, $id);
 
                 $this->assertEquals([
@@ -90,7 +90,7 @@ class CanParseAndCreateObjectsTest extends TestCase
 
         $called = false;
         $this->parser
-            ->addResolver('test', function ($data, $id) {
+            ->resolver('test', function ($data, $id) {
                 $this->assertEquals(31, $id);
 
                 $this->assertEquals([
@@ -101,7 +101,7 @@ class CanParseAndCreateObjectsTest extends TestCase
                     'model'
                 ];
             })
-            ->addResolver('test2.test2', function ($data, $id) use (&$called) {
+            ->resolver('test2.test2', function ($data, $id) use (&$called) {
                 $this->assertEquals(32, $id);
                 $this->assertEquals([
                     'example' => 'data2'
@@ -159,7 +159,7 @@ class CanParseAndCreateObjectsTest extends TestCase
 
         $called = false;
         $this->parser
-            ->addResolver('test', function ($data, $id) {
+            ->resolver('test', function ($data, $id) {
                 $this->assertEquals(31, $id);
 
                 $this->assertEquals([
@@ -170,7 +170,7 @@ class CanParseAndCreateObjectsTest extends TestCase
                     'model'
                 ];
             })
-            ->addResolver('test2Relationship.test2', function ($data, $id) {
+            ->resolver('test2Relationship.test2', function ($data, $id) {
                 $this->assertEquals(32, $id);
                 $this->assertEquals([
                     'example' => 'data2'
@@ -180,7 +180,7 @@ class CanParseAndCreateObjectsTest extends TestCase
                     'model2'
                 ];
             })
-            ->addResolver('test3', function ($data, $id) use (&$called) {
+            ->resolver('test3', function ($data, $id) use (&$called) {
                 $this->assertEquals(33, $id);
                 $this->assertEquals([
                     'example' => 'data3'
@@ -244,20 +244,20 @@ class CanParseAndCreateObjectsTest extends TestCase
 
         $called = false;
         $resolved = $this->parser
-            ->addResolver('fake1', function ($data, $id) {
+            ->resolver('fake1', function ($data, $id) {
                 $fakeModel1 = new FakeModel1($data);
                 $fakeModel1->id = $id;
 
                 return $fakeModel1;
             })
-            ->addResolver('fake1.children.fake2', function (FakeModel1 $fakeModel1, $data, $id) {
+            ->resolver('fake1.children.fake2', function (FakeModel1 $fakeModel1, $data, $id) {
                 $this->assertEquals(31, $fakeModel1->id);
                 return new FakeModel2([
                     'other_id' => $id,
                     'parent_id' => $fakeModel1->id
                 ]);
             })
-            ->addResolver('parent.fake2', function (FakeModel1 $parent, FakeModel2 $child, $data, $parentId) use (&$called) {
+            ->resolver('parent.fake2', function (FakeModel1 $parent, FakeModel2 $child, $data, $parentId) use (&$called) {
                 $this->assertEquals(31, $parent->id);
                 $this->assertEquals(123, $child->other_id);
                 $this->assertEquals(456, $parentId);

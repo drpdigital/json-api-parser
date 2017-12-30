@@ -38,7 +38,7 @@ class CanValidateJsonApiResourcesTest extends TestCase
         $validator = new FakePassingValidator();
 
         $passed = $this->validator
-            ->addValidator('test', $validator)
+            ->validator('test', $validator)
             ->validate($simple);
 
         $this->assertTrue($passed);
@@ -63,7 +63,7 @@ class CanValidateJsonApiResourcesTest extends TestCase
 
         try {
             $this->validator
-                ->addValidator('test', $validator)
+                ->validator('test', $validator)
                 ->validate($simple);
         } catch (FailedValidationException $exception) {
             $messages = $exception->getMessages();
@@ -114,7 +114,7 @@ class CanValidateJsonApiResourcesTest extends TestCase
         $validator = new FakePassingValidator();
 
         $passed = $this->validator
-            ->addValidator('test', $validator)
+            ->validator('test', $validator)
             ->validate($simple);
 
         $this->assertTrue($passed);

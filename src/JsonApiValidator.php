@@ -58,11 +58,11 @@ class JsonApiValidator extends JsonApiParser
      * @return $this
      * @throws \Drp\JsonApiParser\Exceptions\FailedValidationException
      */
-    public function addValidator($type, $validator)
+    public function validator($type, $validator)
     {
         $this->validators[$type] = $validator;
 
-        $this->addResolver($type, function ($data, $resourceId) use ($type) {
+        $this->resolver($type, function ($data, $resourceId) use ($type) {
             /** @var \Drp\JsonApiParser\Contracts\ValidatorExecutor[] $validators */
             $validators = Arr::wrap($this->validators[$type]);
 

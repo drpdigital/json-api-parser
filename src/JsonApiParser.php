@@ -61,15 +61,15 @@ class JsonApiParser
     /**
      * Adds the callbacks for resolve the different objects in the response
      *
-     * @param array|string $relationshipName
+     * @param array|string $resourceNames
      * @param callable|string $callback
      * @return JsonApiParser
      */
-    public function addResolver($relationshipName, $callback)
+    public function resolver($resourceNames, $callback)
     {
-        $relationshipName = Arr::wrap($relationshipName);
+        $resourceNames = Arr::wrap($resourceNames);
 
-        foreach ($relationshipName as $name) {
+        foreach ($resourceNames as $name) {
             $this->resolver->bind($name, $callback);
         }
 

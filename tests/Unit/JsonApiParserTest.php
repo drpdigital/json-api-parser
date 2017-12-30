@@ -13,12 +13,12 @@ class JsonApiParserTest extends TestCase
     public function it_will_skip_over_badly_formed_relationship()
     {
         $parser = new JsonApiParser(new ResourceResolver(new FakeContainer()));
-        $parser->addResolver('test', function () {
+        $parser->resolver('test', function () {
             return 'GOOD';
         });
 
         $called = false;
-        $parser->addResolver('test-bad', function () use (&$called) {
+        $parser->resolver('test-bad', function () use (&$called) {
             $called = true;
         });
 

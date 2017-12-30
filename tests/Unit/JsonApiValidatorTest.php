@@ -29,7 +29,7 @@ class JsonApiValidatorTest extends TestCase
     public function can_get_validator()
     {
         $resourceValidator = new FakePassingValidator();
-        $this->validator->addValidator('test', $resourceValidator);
+        $this->validator->validator('test', $resourceValidator);
 
         $this->assertEquals($resourceValidator, $this->validator->getValidator('test'));
         $this->assertEquals($resourceValidator, $this->validator->test);
@@ -41,8 +41,8 @@ class JsonApiValidatorTest extends TestCase
         $passingValidator = new FakePassingValidator();
         $failingValidator = new FakeFailingValidator();
 
-        $this->validator->addValidator('pass', $passingValidator)
-            ->addValidator('fail', $failingValidator);
+        $this->validator->validator('pass', $passingValidator)
+            ->validator('fail', $failingValidator);
 
         $validators = $this->validator->all();
 
@@ -57,8 +57,8 @@ class JsonApiValidatorTest extends TestCase
         $passingValidator = new FakePassingValidator();
         $failingValidator = new FakeFailingValidator();
 
-        $this->validator->addValidator('pass', $passingValidator)
-            ->addValidator('fail', $failingValidator);
+        $this->validator->validator('pass', $passingValidator)
+            ->validator('fail', $failingValidator);
 
         $this->validator->removeValidator(['pass']);
         $validators = $this->validator->all();
@@ -118,7 +118,7 @@ class JsonApiValidatorTest extends TestCase
     /** @test */
     public function can_get_all_errors()
     {
-        $this->validator->addValidator('fail', new FakeFailingValidator());
+        $this->validator->validator('fail', new FakeFailingValidator());
         $this->validator->addPresenceChecker('fail-not-exist');
 
         try {
@@ -195,7 +195,7 @@ class JsonApiValidatorTest extends TestCase
     /** @test */
     public function reflection_exceptions_are_caught()
     {
-        $this->validator->addResolver('test', 'UnknownValidator::handle');
+        $this->validator->resolver('test', 'UnknownValidator::handle');
         $result = $this->validator->validate([
             'data' => [
                 'id' => 1,
