@@ -6,7 +6,7 @@ use Drp\JsonApiParser\Arr;
 
 class FakeModel1
 {
-    private $data;
+    public $data;
 
     public function __construct($data)
     {

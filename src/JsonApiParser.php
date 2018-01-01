@@ -77,6 +77,27 @@ class JsonApiParser
     }
 
     /**
+     * Add a callback for a class that when called will return an existing instance of
+     * a relationship.
+     *
+     * This callback will be called when trying to resolve a parameter dependency on
+     * a resolver callback. The callback will only be given the id of the relationship it
+     * needs to be fetched.
+     *
+     * @param string|array $className
+     * @param string|callable $relationshipName This can be an optional relationship name or
+     *  the callable for the fetcher.
+     * @param callable|string $callback
+     * @return static
+     */
+    public function fetcher($className, $relationshipName, $callback = null)
+    {
+        $this->resolver->bindFetcher($className, $relationshipName, $callback);
+
+        return $this;
+    }
+
+    /**
      * Starts the parsing and creating of the relationships.
      *
      * @return void

@@ -13,7 +13,7 @@ class Collection implements \ArrayAccess
      *
      * @var array
      */
-    protected $items;
+    protected $items = [];
 
     /**
      * Get the resolved resource by key.

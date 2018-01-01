@@ -17,6 +17,20 @@ class ResourceResolver
     protected $resolvers = [];
 
     /**
+     * Callbacks for fetching resolved resources.
+     *
+     * @var array
+     */
+    protected $fetchers = [];
+
+    /**
+     * Array between the fetcher class that is resolved and the json api relationship key.
+     *
+     * @var array
+     */
+    private $fetcherRelationships = [];
+
+    /**
      * Collection of all the resolved resources keyed by their type and id.
      *
      * @var \Drp\JsonApiParser\ResolvedCollection
@@ -35,7 +49,22 @@ class ResourceResolver
      *
      * @var callable
      */
-    private $missingResolverCallback;
+    protected $missingResolverCallback;
+
+    /**
+     * The resource currently being resolved.
+     *
+     * @var array
+     */
+    protected $resource;
+
+    /**
+     * Array of the relationships that have been fetched. This is so we don't have to throw
+     * an exception if there isn't a resolver.
+     *
+     * @var array
+     */
+    private $fetchedRelationships = [];
 
     /**
      * ResourceResolver constructor.
@@ -63,6 +92,25 @@ class ResourceResolver
     }
 
     /**
+     * Adds the callback to fetch a resolved relationship for a parameter on a resolver.
+     *
+     * @param string $fetcherKey
+     * @param string|callable $relationshipName
+     * @param callable|string $callback
+     * @return void
+     */
+    public function bindFetcher($fetcherKey, $relationshipName, $callback = null)
+    {
+        if ($callback !== null) {
+            $this->fetcherRelationships[$fetcherKey][] = $relationshipName;
+        }
+
+        $callback = $callback ?: $relationshipName;
+
+        $this->fetchers[$fetcherKey] = $callback;
+    }
+
+    /**
      * Get resolved resources.
      *
      * @return \Drp\JsonApiParser\ResolvedCollection
@@ -87,6 +135,10 @@ class ResourceResolver
         $resolver = $this->getResolverForType($type);
 
         if ($resolver === null || (!is_callable($resolver) && !is_string($resolver))) {
+            if (in_array($type, $this->fetchedRelationships, true)) {
+                return null;
+            }
+
             $unresolveResource = new UnresolvedResource($type, $resource);
 
             $callback = $this->missingResolverCallback;
@@ -97,6 +149,7 @@ class ResourceResolver
             }
         }
 
+        $this->resource = $resource;
         $id = Arr::get($resource, 'id');
 
         $defaultParameters = [
@@ -142,6 +195,12 @@ class ResourceResolver
             // and thus no need for dependency injection.
             if ($parameterClass === null) {
                 return array_pop($defaultParameters);
+            }
+
+            $fetched = $this->findFetchedResource($parameter, $parameterClass);
+
+            if ($fetched !== null) {
+                return $fetched;
             }
 
             // If the parameter asks for a dependency then check parents first
@@ -297,5 +356,62 @@ class ResourceResolver
         $this->missingResolverCallback = $callback;
 
         return $this;
+    }
+
+    /**
+     * @param \ReflectionParameter $parameter
+     * @param \ReflectionClass $parameterClass
+     * @return mixed|null
+     */
+    protected function findFetchedResource(\ReflectionParameter $parameter, \ReflectionClass $parameterClass)
+    {
+        $fetcher = Arr::get($this->fetchers, $parameterClass->getName());
+
+        if ($fetcher === null) {
+            return null;
+        }
+
+        $relationship = null;
+
+        if (array_key_exists($parameterClass->getName(), $this->fetcherRelationships)) {
+            $relationship = $this->relationshipFinder()->fromFullyQualifiedRelationships(
+                $this->fetcherRelationships[$parameterClass->getName()]
+            );
+        }
+
+        if ($relationship === null) {
+            $relationship = $this->relationshipFinder()->fromRelationshipType($parameter->name);
+        }
+
+        if ($relationship === null) {
+            return null;
+        }
+
+        $this->recordFetchedRelationship($relationship);
+
+        return $this->callResolver($fetcher, [$relationship->getId()]);
+    }
+
+    /**
+     * Make a parameter builder.
+     *
+     * @return \Drp\JsonApiParser\RelationshipResourceFinder
+     */
+    protected function relationshipFinder()
+    {
+        return new RelationshipResourceFinder($this->resource);
+    }
+
+    /**
+     * Save that a resource has been fetched.
+     *
+     * @param \Drp\JsonApiParser\RelationshipResource $relationship
+     * @return void
+     */
+    protected function recordFetchedRelationship(RelationshipResource $relationship)
+    {
+        $this->fetchedRelationships[] = $this->resource['type'] .
+            '.' . $relationship->getName() .
+            '.' . $relationship->getType();
     }
 }

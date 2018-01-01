@@ -10,6 +10,7 @@ use Tests\Fakes\FakeContainer;
 use Tests\Fakes\FakeDependency;
 use Tests\Fakes\FakeModel1;
 use Tests\Fakes\FakeModel2;
+use Tests\Unit\FakeChildDependency;
 
 class CanParseAndCreateObjectsTest extends TestCase
 {
@@ -309,11 +310,73 @@ class CanParseAndCreateObjectsTest extends TestCase
 
         $called = false;
         $this->parser
-            ->addResolver('test', function (FakeDependency $dependency) use (&$called) {
+            ->resolver('test', function (FakeDependency $dependency) use (&$called) {
                 $called = $dependency->isBuilt();
             })
             ->parse($simple);
 
         $this->assertTrue($called, 'Did not dependency inject');
+    }
+
+    /**
+     * @test
+     * @throws \ReflectionException
+     */
+    public function canFetchResources()
+    {
+        $collection = $this->parser
+            ->resolver('test', function (FakeModel1 $testChild) {
+                return $testChild;
+            })
+            ->fetcher(FakeModel1::class, function ($id) {
+                $this->assertEquals(5, $id);
+
+                return new FakeModel1(['id' => 5]);
+            })
+            ->parse([
+                'data' => [
+                    'id' => 1,
+                    'type' => 'test',
+                    'relationships' => [
+                        'relation' => [
+                            'data' => [
+                                'id' => 5,
+                                'type' => 'test-child'
+                            ]
+                        ]
+                    ]
+                ]
+            ]);
+
+        $this->assertInstanceOf(FakeModel1::class, $collection->get('test'));
+        $this->assertEquals(['id' => 5], $collection->get('test')->data);
+    }
+
+    /** @test */
+    public function canHandleNotHavingAnyRelationshipsButStillHaveAFetcher()
+    {
+        $resolver = new ResourceResolver(new FakeContainer());
+        $resolver->onMissingResolver(function () {
+            return false;
+        });
+        $parser = new JsonApiParser($resolver);
+
+        $collection = $parser
+            ->resolver('test', function (FakeModel1 $testChild = null) {
+                return $testChild;
+            })
+            ->fetcher(FakeModel1::class, function ($id) {
+                $this->assertEquals(5, $id);
+
+                return new FakeModel1(['id' => 5]);
+            })
+            ->parse([
+                'data' => [
+                    'id' => 1,
+                    'type' => 'test',
+                ]
+            ]);
+
+        $this->assertTrue($collection->hasNot('test'));
     }
 }
