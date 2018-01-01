@@ -55,7 +55,7 @@ class RelationshipResourceFinder
             function ($relationship) use ($type) {
                 $relationshipType = Arr::get($relationship, 'type');
 
-                return $type === Str::snakeCase($relationshipType) || $type === Str::camelCase($relationshipType);
+                return Str::snakeCase($type) === Str::snakeCase($relationshipType);
             }
         );
     }

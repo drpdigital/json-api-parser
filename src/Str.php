@@ -21,18 +21,4 @@ class Str
 
         return $value;
     }
-
-    /**
-     * Convert given input into camel case.
-     *
-     * @param string $value
-     * @return string
-     */
-    public static function camelCase($value)
-    {
-        $value = ucwords(str_replace(['-', '_'], ' ', $value));
-        $value = str_replace(' ', '', $value);
-
-        return lcfirst($value);
-    }
 }
