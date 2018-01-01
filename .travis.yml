@@ -11,6 +11,10 @@ matrix:
     - php: hhvm
 
 install:
+  - composer require satooshi/php-coveralls:dev-master
   - composer install
 
-script: ./vendor/bin/phpunit --configuration phpunit.xml --coverage-text
+script: ./vendor/bin/phpunit --configuration phpunit.xml --coverage-clover ./tests/logs/clover.xml
+
+after_script:
+- php vendor/bin/coveralls -v
