@@ -139,13 +139,13 @@ class ResourceResolver
                 return null;
             }
 
-            $unresolveResource = new UnresolvedResource($type, $resource);
+            $unresolvedResource = new UnresolvedResource($type, $resource);
 
             $callback = $this->missingResolverCallback;
-            $shouldContinue = $callback($unresolveResource);
+            $shouldContinue = $callback($unresolvedResource);
 
             if ($shouldContinue === false || $shouldContinue === null) {
-                return $unresolveResource;
+                return $unresolvedResource;
             }
         }
 
