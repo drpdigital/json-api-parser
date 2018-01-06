@@ -175,7 +175,7 @@ class JsonApiValidator extends JsonApiParser
      * @param callable $callback
      * @return $this
      */
-    public function addPresenceChecker($type, $callback = null)
+    public function presenceChecker($type, $callback = null)
     {
         $this->presenceCheckers[$type] = $callback;
 

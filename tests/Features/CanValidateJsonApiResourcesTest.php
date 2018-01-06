@@ -140,7 +140,7 @@ class CanValidateJsonApiResourcesTest extends TestCase
 
         try {
             $this->validator
-                ->addPresenceChecker('simple.address.test', function () {
+                ->presenceChecker('simple.address.test', function () {
                     return true;
                 })
                 ->validate($simple);

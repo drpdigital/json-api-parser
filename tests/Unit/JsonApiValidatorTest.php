@@ -74,7 +74,7 @@ class JsonApiValidatorTest extends TestCase
     /** @test */
     public function resource_checker_can_throw_an_error()
     {
-        $this->validator->addPresenceChecker('test', function () {
+        $this->validator->presenceChecker('test', function () {
             throw new FailedValidationException(['TEST']);
         });
 
@@ -119,7 +119,7 @@ class JsonApiValidatorTest extends TestCase
     public function can_get_all_errors()
     {
         $this->validator->validator('fail', new FakeFailingValidator());
-        $this->validator->addPresenceChecker('fail-not-exist');
+        $this->validator->presenceChecker('fail-not-exist');
 
         try {
             $this->validator->validate([
@@ -139,8 +139,8 @@ class JsonApiValidatorTest extends TestCase
     /** @test */
     public function can_check_for_type_exists_without_callable()
     {
-        $this->validator->addPresenceChecker('test');
-        $this->validator->addPresenceChecker('test-relation');
+        $this->validator->presenceChecker('test');
+        $this->validator->presenceChecker('test-relation');
 
         $result = $this->validator->validate([
             'data' => [
@@ -175,7 +175,7 @@ class JsonApiValidatorTest extends TestCase
     /** @test */
     public function wont_fail_if_resource_not_required()
     {
-        $this->validator->addPresenceChecker('not-required', function () {
+        $this->validator->presenceChecker('not-required', function () {
             return false;
         });
 
@@ -212,7 +212,7 @@ class JsonApiValidatorTest extends TestCase
     /** @test */
     public function it_can_check_for_other_resources_in_resource_checker()
     {
-        $this->validator->addPresenceChecker('test', function ($resources) {
+        $this->validator->presenceChecker('test', function ($resources) {
             return $resources->hasNot('test-checker');
         });
 
@@ -249,7 +249,7 @@ class JsonApiValidatorTest extends TestCase
     /** @test */
     public function it_will_fail_if_cant_find_other_resources()
     {
-        $this->validator->addPresenceChecker('test', function ($resources) {
+        $this->validator->presenceChecker('test', function ($resources) {
             return $resources->has('test-checker');
         });
 
