@@ -233,7 +233,14 @@ class ResourceResolver
             }
 
             foreach ($this->customParameterResolvers as $parameterResolver) {
-                $resolved = $this->callResolver($parameterResolver, [$parameter]);
+                $resolved = $this->callResolver(
+                    $parameterResolver,
+                    [
+                        $parameter,
+                        Arr::get($this->resource, 'id'),
+                        Arr::get($this->resource, 'type'),
+                    ]
+                );
 
                 if ($resolved !== null) {
                     return $resolved;

@@ -402,15 +402,15 @@ class ResourceResolverTest extends TestCase
             ->addCustomParameterResolver(function (\ReflectionParameter $parameter) {
                 return null;
             })
-            ->addCustomParameterResolver(function (\ReflectionParameter $parameter) {
-                if ($parameter->getClass()->getName() === FakeDependency::class) {
-                    return new FakeDependency();
+            ->addCustomParameterResolver(function (\ReflectionParameter $parameter, $id, $type) {
+                if ($parameter->getClass()->getName() === FakeModel1::class && $type === 'test') {
+                    return new FakeModel1(['id' => $id]);
                 }
 
                 return null;
             });
 
-        $resolver->bind('test', function (FakeDependency $dependency = null) {
+        $resolver->bind('test', function (FakeModel1 $dependency = null) {
             return $dependency;
         });
 
@@ -419,7 +419,8 @@ class ResourceResolverTest extends TestCase
             'type' => 'test',
         ]);
 
-        $this->assertInstanceOf(FakeDependency::class, $resolved);
+        $this->assertInstanceOf(FakeModel1::class, $resolved);
+        $this->assertEquals(['id' => 5], $resolved->data);
     }
 }
 
