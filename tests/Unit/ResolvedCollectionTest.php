@@ -55,4 +55,14 @@ class ResolvedCollectionTest extends TestCase
         $this->assertEquals($resolved, $collection->get('fake')[0]);
         $this->assertEquals($resolved2, $collection->get('fake')[1]);
     }
+
+    /** @test */
+    public function can_handle_non_object_being_added()
+    {
+        $collection = new ResolvedCollection();
+
+        $collection->add('test', 3);
+
+        $this->assertEquals(3, $collection->get('test'));
+    }
 }

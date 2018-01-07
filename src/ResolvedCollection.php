@@ -38,6 +38,10 @@ class ResolvedCollection extends Collection
     {
         parent::add($key, $value);
 
+        if (is_object($value) === false) {
+            return;
+        }
+
         $this->classMapping[get_class($value)][] = $key;
     }
 }

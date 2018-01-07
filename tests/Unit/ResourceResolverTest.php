@@ -375,6 +375,23 @@ class ResourceResolverTest extends TestCase
 
         $this->assertNull($resolved);
     }
+
+    /** @test */
+    public function non_object_being_resolved_will_be_added_to_the_collection()
+    {
+        $resolver = new ResourceResolver(new FakeContainer());
+
+        $resolver->bind('test', function () {
+            return 3;
+        });
+
+        $resolved = $resolver->resolve('test', [
+            'id' => 5,
+            'type' => 'test',
+        ]);
+
+        $this->assertEquals(3, $resolver->getResolved()->get('test'));
+    }
 }
 
 class FakeChildDependency extends FakeDependency

@@ -163,7 +163,8 @@ class ResourceResolver
         );
 
         $resolved = $this->callResolver($resolver, $parameters);
-        if (is_object($resolved)) {
+
+        if ($resolved !== null) {
             $this->resolved->add($type, $resolved);
         }
 
