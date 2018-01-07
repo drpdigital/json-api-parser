@@ -32,7 +32,7 @@ class JsonApiValidator extends JsonApiParser
     /**
      * All the types that have been seen by this validator.
      *
-     * @var array
+     * @var \Drp\JsonApiParser\Collection
      */
     protected $seenTypes;
 
