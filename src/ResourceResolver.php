@@ -67,6 +67,13 @@ class ResourceResolver
     private $fetchedRelationships = [];
 
     /**
+     * Custom parameter resolvers for a ReflectionParameter
+     *
+     * @var array
+     */
+    private $customParameterResolvers = [];
+
+    /**
      * ResourceResolver constructor.
      * @param \Psr\Container\ContainerInterface $container
      */
@@ -108,6 +115,19 @@ class ResourceResolver
         $callback = $callback ?: $relationshipName;
 
         $this->fetchers[$fetcherKey] = $callback;
+    }
+
+    /**
+     * Add a custom parameter resolver.
+     *
+     * @param callable|string $callback
+     * @return \Drp\JsonApiParser\ResourceResolver
+     */
+    public function addCustomParameterResolver($callback)
+    {
+        $this->customParameterResolvers[] = $callback;
+
+        return $this;
     }
 
     /**
@@ -210,6 +230,14 @@ class ResourceResolver
 
             if ($parent !== null) {
                 return $parent;
+            }
+
+            foreach ($this->customParameterResolvers as $parameterResolver) {
+                $resolved = $this->callResolver($parameterResolver, [$parameter]);
+
+                if ($resolved !== null) {
+                    return $resolved;
+                }
             }
 
             if ($this->container->has($parameterClass->getName())) {

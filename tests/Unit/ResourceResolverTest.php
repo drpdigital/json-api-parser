@@ -392,6 +392,35 @@ class ResourceResolverTest extends TestCase
 
         $this->assertEquals(3, $resolver->getResolved()->get('test'));
     }
+
+    /** @test */
+    public function can_add_custom_parameter_resolver()
+    {
+        $resolver = new ResourceResolver(new FakeContainer());
+
+        $resolver
+            ->addCustomParameterResolver(function (\ReflectionParameter $parameter) {
+                return null;
+            })
+            ->addCustomParameterResolver(function (\ReflectionParameter $parameter) {
+                if ($parameter->getClass()->getName() === FakeDependency::class) {
+                    return new FakeDependency();
+                }
+
+                return null;
+            });
+
+        $resolver->bind('test', function (FakeDependency $dependency = null) {
+            return $dependency;
+        });
+
+        $resolved = $resolver->resolve('test', [
+            'id' => 5,
+            'type' => 'test',
+        ]);
+
+        $this->assertInstanceOf(FakeDependency::class, $resolved);
+    }
 }
 
 class FakeChildDependency extends FakeDependency
