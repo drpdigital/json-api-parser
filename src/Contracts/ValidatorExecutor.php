@@ -21,7 +21,19 @@ interface ValidatorExecutor
     public function passes();
 
     /**
-     * @return mixed
+     * Returns an array of error messages with a key for each attribute that has failed validation.
+     * E.g.
+     * [
+     *     'firstName' => [
+     *         'The first name is required.',
+     *         'Can not have numbers in your first name.',
+     *     ],
+     *     'age' => [
+     *         'Must be over 18.',
+     *     ]
+     * ]
+     *
+     * @return array
      */
     public function errors();
 }
